@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarocMarket - Marketplace & Annonces</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --primary-orange: #d35400;
+        }
+        body {
+            background-color: #f8f9fa;
+            padding-top: 70px;
+            padding-bottom: 90px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .fixed-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1030;
+            background: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .fixed-footer {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 1030;
+            background: #ffffff;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+        }
+        .product-card img {
+            height: 180px;
+            object-fit: cover;
+        }
+        .view-section {
+            display: none;
+        }
+        .view-section.active {
+            display: block;
+        }
+        .category-icon-box {
+            transition: transform 0.2s, background-color 0.2s;
+            cursor: pointer;
+            height: 100%;
+        }
+        .category-icon-box:hover {
+            transform: translateY(-3px);
+            background-color: #e9ecef !important;
+        }
+        #view-landing.active {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            bottom: 90px;
+            background: linear-gradient(135deg, #d35400 0%, #e67e22 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1020;
+        }
+        .admin-header-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .admin-header-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+        .admin-header-btn i {
+            margin-right: 5px;
+        }
+        .text-primary { color: #d35400 !important; }
+        .bg-primary { background-color: #d35400 !important; }
+        .btn-primary { background-color: #d35400 !important; border-color: #d35400 !important; }
+        .btn-primary:hover { background-color: #b94600 !important; border-color: #b94600 !important; }
+        .btn-outline-primary { color: #d35400 !important; border-color: #d35400 !important; }
+        .btn-outline-primary:hover { background-color: #d35400 !important; color: #fff !important; }
+        .product-card {
+            transition: transform 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        .landing-icon {
+            font-size: 5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        .error-container {
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .error-container i {
+            font-size: 4rem;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        .footer-link {
+            color: #d35400;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        .footer-link:hover {
+            color: #b94600;
+            text-decoration: underline;
+        }
+        .header-brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #d35400;
+            text-decoration: none;
+        }
+        .header-brand:hover {
+            color: #b94600;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER FIXE -->
+    <header class="fixed-header px-3 py-2 d-flex justify-content-between align-items-center">
+        <a href="#" class="header-brand" onclick="switchView('landing')">
+            <i class="fa-solid fa-store me-1"></i> MarocMarket
+        </a>
+        <!-- Bouton Admin dans le header -->
+        <button class="admin-header-btn" onclick="openAdminLogin()">
+            <i class="fa-solid fa-lock"></i> Admin
+        </button>
+    </header>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main class="container my-3">
+
+        <!-- 1. LANDING PAGE -->
+        <section id="view-landing" class="view-section active text-white text-center p-4">
+            <div>
+                <div class="landing-icon mb-4">
+                    <i class="fa-solid fa-store"></i>
+                </div>
+                <h1 class="display-4 fw-bold mb-3">Bienvenue sur MarocMarket</h1>
+                <p class="lead mb-4">Votre marketplace pour acheter et vendre au Maroc.</p>
+                <button class="btn btn-light text-primary fw-bold px-5 py-3 rounded-pill shadow" onclick="switchView('app')">
+                    <i class="fa-solid fa-rocket me-2"></i> Accéder au marché
+                </button>
+            </div>
+        </section>
+
+        <!-- 2. APPLICATION / MARCHÉ -->
+        <section id="view-app" class="view-section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold m-0 text-primary"><i class="fa-solid fa-compass me-1"></i> Explorer par Catégories</h4>
+                <button class="btn btn-sm btn-primary" onclick="openAddModal()"><i class="fa-solid fa-plus me-1"></i> Publier</button>
+            </div>
+            <div class="card shadow-sm border-0 mb-4 p-2 bg-white">
+                <div class="row g-2" id="appCategoriesGrid"></div>
+            </div>
+            
+            <!-- Affichage des annonces -->
+            <div class="mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-primary"><i class="fa-solid fa-clock-rotate-left me-2"></i>Dernières annonces</h5>
+                    <span class="badge bg-secondary" id="productCount">0 annonces</span>
+                </div>
+                <div id="productsContainer">
+                    <div class="row g-3" id="homeProductsGrid"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. PAGE DÉDIÉE PAR CATÉGORIE -->
+        <section id="view-category-page" class="view-section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <button class="btn btn-sm btn-outline-secondary" onclick="switchView('app')">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Retour
+                </button>
+                <h4 class="fw-bold m-0 text-primary" id="catPageTitle">Catégorie</h4>
+                <button class="btn btn-sm btn-primary" onclick="openAddModal()"><i class="fa-solid fa-plus"></i></button>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-3 p-3 bg-white">
+                <div class="row g-2 align-items-center">
+                    <div class="col-12 col-md-6">
+                        <input type="text" id="catSearchInput" class="form-control form-control-sm" placeholder="Rechercher..." onkeyup="renderCategoryPageProducts()">
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <select id="catPageCityFilter" class="form-select form-select-sm" onchange="renderCategoryPageProducts()">
+                            <option value="">Toutes les villes</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3" id="categoryPageGrid"></div>
+        </section>
+
+        <!-- 4. ADMIN -->
+        <section id="view-admin" class="view-section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold m-0"><i class="fa-solid fa-gauge text-danger me-2"></i>Admin Dashboard</h4>
+                <button class="btn btn-sm btn-secondary" onclick="switchView('app')">Quitter</button>
+            </div>
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Titre</th>
+                                    <th>Catégorie</th>
+                                    <th>Ville</th>
+                                    <th>Prix</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="fixed-footer text-center py-2 bg-white border-top">
+        <div class="mb-1">
+            <small class="text-muted">MarocMarket &copy; 2026 - Géré Par : M.Seddik ELidrissi</small>
+        </div>
+        <div>
+            <a href="javascript:void(0);" onclick="openContactModal()" class="footer-link">
+                <i class="fa-solid fa-headset me-1"></i> Pour toute question, suggestion ou réclamation, contacter l'admin
+            </a>
+        </div>
+    </footer>
+
+    <!-- MODALES -->
+    <!-- Contact -->
+    <div class="modal fade" id="contactModal" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fa-solid fa-headset me-2"></i> Contact Administrateur</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body bg-light">
+                    <div class="container py-3" style="max-width: 600px;">
+                        <form id="contactForm" class="bg-white p-4 rounded shadow-sm">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Nom Complet <span class="text-danger">*</span></label>
+                                <input type="text" id="contactName" class="form-control" placeholder="Votre nom...">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Téléphone <span class="text-danger">*</span></label>
+                                <input type="text" id="contactPhone" class="form-control" placeholder="Ex: 0600000000">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Objet <span class="text-danger">*</span></label>
+                                <select id="contactSubject" class="form-select">
+                                    <option value="" selected disabled>-- Choisir --</option>
+                                    <option value="Question">Question</option>
+                                    <option value="Suggestion">Suggestion</option>
+                                    <option value="Réclamation">Réclamation</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Message <span class="text-danger">*</span></label>
+                                <textarea id="contactMessage" class="form-control" rows="4" placeholder="Votre message..."></textarea>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer bg-white d-flex justify-content-between">
+                    <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-xmark me-1"></i> Annuler
+                    </button>
+                    <button type="button" class="btn btn-success px-4" onclick="submitContactForm()">
+                        <i class="fa-brands fa-whatsapp me-1"></i> Envoyer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add -->
+    <div class="modal fade" id="addModal" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fa-solid fa-plus-circle me-1"></i> Publier une annonce</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body bg-light">
+                    <div class="container py-3" style="max-width: 600px;">
+                        <form id="addForm" class="bg-white p-4 rounded shadow-sm">
+                            <div class="mb-3">
+                                <label class="form-label">Titre <span class="text-danger">*</span></label>
+                                <input type="text" id="addTitle" class="form-control" placeholder="Ex: iPhone 15 Pro">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Catégorie <span class="text-danger">*</span></label>
+                                <select id="addCategory" class="form-select"></select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Ville <span class="text-danger">*</span></label>
+                                <select id="addCity" class="form-select"></select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Prix (MAD) <span class="text-danger">*</span></label>
+                                <input type="number" id="addPrice" class="form-control" placeholder="Ex: 8500">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Téléphone / WhatsApp <span class="text-danger">*</span></label>
+                                <input type="text" id="addPhone" class="form-control" placeholder="+212600000000">
+                            </div>
+                            <hr>
+                            <label class="form-label fw-bold">Images (Jusqu'à 4)</label>
+                            <div class="mb-2"><input type="file" id="addImage1" class="form-control form-control-sm" accept="image/*"></div>
+                            <div class="mb-2"><input type="file" id="addImage2" class="form-control form-control-sm" accept="image/*"></div>
+                            <div class="mb-2"><input type="file" id="addImage3" class="form-control form-control-sm" accept="image/*"></div>
+                            <div class="mb-3"><input type="file" id="addImage4" class="form-control form-control-sm" accept="image/*"></div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <textarea id="addDesc" class="form-control" rows="3" placeholder="Détails..."></textarea>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer bg-white d-flex justify-content-between">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary px-4" onclick="submitAddForm()">Publier</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail -->
+    <div class="modal fade" id="detailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" id="detailModalContent"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Configuration
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyqdvyO6YiOLfvo-aZimdOvLsoz23NtBmkC8YgF_grnJWNS8ewcuacbBa2PGmxD4eBV1Q/exec";
+
+        const categoriesList = [
+            { name: "Véhicules", icon: "fa-car", color: "#dc3545" },
+            { name: "Électronique", icon: "fa-bolt", color: "#6610f2" },
+            { name: "Immobilier", icon: "fa-building", color: "#d35400" },
+            { name: "Emploi", icon: "fa-briefcase", color: "#6c757d" },
+            { name: "Services", icon: "fa-toolbox", color: "#495057" },
+            { name: "Mode", icon: "fa-shirt", color: "#d63384" },
+            { name: "Maison & Jardin", icon: "fa-house-chimney", color: "#fd7e14" },
+            { name: "Animaux", icon: "fa-paw", color: "#e83e8c" },
+            { name: "Loisirs", icon: "fa-gamepad", color: "#20c997" },
+            { name: "Sport", icon: "fa-futbol", color: "#198754" },
+            { name: "Meubles", icon: "fa-couch", color: "#b02a37" },
+            { name: "Informatique", icon: "fa-laptop", color: "#3d0099" },
+            { name: "Téléphonie", icon: "fa-mobile-screen", color: "#0dcaf0" },
+            { name: "Bricolage", icon: "fa-wrench", color: "#fd1d1d" },
+            { name: "Jardinage", icon: "fa-seedling", color: "#28a745" },
+            { name: "Alimentation", icon: "fa-apple-whole", color: "#ffc107" },
+            { name: "Livres", icon: "fa-book", color: "#795548" },
+            { name: "Musique", icon: "fa-music", color: "#e91e63" },
+            { name: "Cinéma", icon: "fa-film", color: "#607d8b" },
+            { name: "Jeux vidéo", icon: "fa-headset", color: "#9c27b0" },
+            { name: "Artisanat & Terroir", icon: "fa-basket-shopping", color: "#a52a2a" },
+            { name: "Bébé & Enfants", icon: "fa-child-reaching", color: "#00bcd4" },
+            { name: "Cours & Formations", icon: "fa-graduation-cap", color: "#3f51b5" },
+            { name: "Événements", icon: "fa-calendar-days", color: "#ff5722" },
+            { name: "Matériel Pro", icon: "fa-industry", color: "#607d8b" },
+            { name: "Autre", icon: "fa-asterisk", color: "#343a40" }
+        ];
+
+        const citiesList = [
+            "Casablanca", "Marrakech", "Rabat", "Fès", "Tanger", "Agadir", 
+            "Meknès", "Oujda", "Kénitra", "Tétouan", "Safi", "El Jadida", 
+            "Beni Mellal", "Nador", "Taza", "Mohammedia", "Khouribga", 
+            "El Kelaâ des Sraghna", "Essaouira", "Errachidia", "Ouarzazate", "Autre"
+        ];
+
+        let products = [];
+        let currentActiveCategory = "";
+        let dataLoaded = false;
+
+        // Fonction utilitaire pour nettoyer le numéro de téléphone
+        function cleanPhone(phone) {
+            if (!phone) return '0600000000';
+            // Convertir en string si ce n'est pas déjà une chaîne
+            let phoneStr = String(phone);
+            // Supprimer tous les caractères non numériques
+            return phoneStr.replace(/[^0-9]/g, '');
+        }
+
+        // Fonction utilitaire pour s'assurer que les images sont un tableau
+        function ensureImages(images) {
+            if (!images) return ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=500'];
+            if (Array.isArray(images)) return images;
+            if (typeof images === 'string') {
+                try {
+                    const parsed = JSON.parse(images);
+                    return Array.isArray(parsed) ? parsed : [images];
+                } catch(e) {
+                    return [images];
+                }
+            }
+            return ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=500'];
+        }
+
+        // Initialisation
+        function initSelectors() {
+            // Catégories
+            const catSelect = document.getElementById('addCategory');
+            if (catSelect) {
+                catSelect.innerHTML = '<option value="" selected disabled>-- Choisir une catégorie --</option>';
+                categoriesList.forEach(c => {
+                    catSelect.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+                });
+            }
+
+            // Villes
+            const citySelects = [document.getElementById('addCity'), document.getElementById('catPageCityFilter')];
+            citySelects.forEach((sel, index) => {
+                if (!sel) return;
+                sel.innerHTML = index > 0 ? '<option value="">Toutes les villes</option>' : '<option value="" selected disabled>-- Choisir une ville --</option>';
+                citiesList.forEach(city => {
+                    sel.innerHTML += `<option value="${city}">${city}</option>`;
+                });
+            });
+
+            renderCategoryGrids();
+        }
+
+        // Chargement des produits depuis le cloud
+        async function loadProducts() {
+            try {
+                // Afficher le chargement
+                Swal.fire({
+                    title: 'Chargement du marché...',
+                    html: `
+                        <div class="d-flex flex-column align-items-center">
+                            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                                <span class="visually-hidden">Chargement...</span>
+                            </div>
+                            <p class="text-muted">Récupération des annonces en cours</p>
+                            <div class="progress w-75" style="height: 5px;">
+                                <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    `,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    background: '#ffffff',
+                    customClass: { popup: 'rounded-4' }
+                });
+
+                // Tentative de connexion au cloud
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' },
+                    mode: 'cors'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Données reçues:', result);
+
+                // Extraire les données
+                let data = [];
+                if (result && result.status === "success" && Array.isArray(result.data)) {
+                    data = result.data;
+                } else if (Array.isArray(result)) {
+                    data = result;
+                } else if (result && Array.isArray(result.products)) {
+                    data = result.products;
+                } else {
+                    throw new Error('Format de données invalide');
+                }
+
+                // Vérifier qu'il y a des données
+                if (!data || data.length === 0) {
+                    throw new Error('Aucune annonce trouvée dans la base de données');
+                }
+
+                // Nettoyer et formater les données avec gestion des types
+                products = data.filter(p => p && typeof p === 'object').map(p => {
+                    // Nettoyer le téléphone
+                    let phone = p.phone || p.Phone || p.Telephone || '0600000000';
+                    phone = String(phone).replace(/[^0-9+]/g, '');
+                    if (!phone.startsWith('+')) {
+                        phone = phone.replace(/^0+/, '');
+                        phone = '+212' + phone;
+                    }
+
+                    return {
+                        id: p.id || p.ID || Date.now() + Math.random(),
+                        title: p.title || p.Titre || p.Title || 'Sans titre',
+                        category: p.category || p.Category || p.Categorie || 'Autre',
+                        city: p.city || p.City || p.Ville || 'Casablanca',
+                        price: Number(p.price || p.Prix || p.Price || 0),
+                        phone: phone,
+                        desc: p.desc || p.description || p.Description || p.Descriptif || '',
+                        images: ensureImages(p.images || p.Images || p.image || p.Image)
+                    };
+                });
+
+                dataLoaded = true;
+                Swal.close();
+                
+                // Afficher les produits
+                renderAllProducts();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Chargement terminé !',
+                    text: `${products.length} annonces disponibles`,
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+            } catch (error) {
+                console.error('Erreur de chargement:', error);
+                Swal.close();
+                
+                // Afficher l'erreur
+                dataLoaded = false;
+                products = [];
+                showErrorMessage(error.message);
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur de chargement',
+                    text: 'Impossible de charger les annonces depuis la base de données.\n' + error.message,
+                    confirmButtonColor: '#d35400',
+                    confirmButtonText: 'Réessayer'
+                }).then(() => {
+                    loadProducts(); // Réessayer
+                });
+            }
+        }
+
+        // Afficher un message d'erreur dans l'interface
+        function showErrorMessage(errorMessage) {
+            const grid = document.getElementById('homeProductsGrid');
+            if (grid) {
+                grid.innerHTML = `
+                    <div class="col-12">
+                        <div class="error-container">
+                            <i class="fa-solid fa-database"></i>
+                            <h4 class="text-danger">Impossible de charger les annonces</h4>
+                            <p class="text-muted">${errorMessage || 'Vérifiez votre connexion et réessayez.'}</p>
+                            <button class="btn btn-primary mt-3" onclick="loadProducts()">
+                                <i class="fa-solid fa-rotate me-2"></i> Réessayer
+                            </button>
+                            <button class="btn btn-outline-secondary mt-3 ms-2" onclick="openAddModal()">
+                                <i class="fa-solid fa-plus me-2"></i> Publier une annonce
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            document.getElementById('productCount').textContent = '0 annonces';
+        }
+
+        // Rendre tous les produits
+        function renderAllProducts() {
+            if (!dataLoaded || products.length === 0) {
+                showErrorMessage('Aucune annonce disponible');
+                return;
+            }
+            
+            renderCategoryGrids();
+            renderHomeProducts();
+            if (currentActiveCategory) {
+                renderCategoryPageProducts();
+            }
+            updateProductCount();
+        }
+
+        function updateProductCount() {
+            const countEl = document.getElementById('productCount');
+            if (countEl) {
+                countEl.textContent = `${products.length} annonces`;
+            }
+        }
+
+        // Catégories
+        function renderCategoryGrids() {
+            const appGrid = document.getElementById('appCategoriesGrid');
+            if (!appGrid) return;
+            
+            let htmlContent = "";
+            categoriesList.forEach(c => {
+                htmlContent += `
+                    <div class="col-4 col-md-4 col-lg-3 p-1">
+                        <div class="p-2 py-3 bg-light rounded shadow-sm text-center category-icon-box d-flex flex-column justify-content-center align-items-center" onclick="openCategoryPage('${c.name}')">
+                            <i class="fa-solid ${c.icon} fa-xl mb-3" style="color: ${c.color};"></i>
+                            <span class="fw-bold text-dark" style="font-size: 0.75rem; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${c.name}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            appGrid.innerHTML = htmlContent;
+        }
+
+        // Page d'accueil
+        function renderHomeProducts() {
+            const grid = document.getElementById('homeProductsGrid');
+            if (!grid) return;
+            
+            if (!dataLoaded || products.length === 0) {
+                showErrorMessage('Aucune annonce disponible');
+                return;
+            }
+            
+            const recentProducts = products.slice(0, 8);
+            
+            grid.innerHTML = '';
+            recentProducts.forEach(p => {
+                const mainImg = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/300';
+                const cleanPhoneNum = cleanPhone(p.phone);
+                grid.innerHTML += `
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="card h-100 product-card shadow-sm border-0">
+                            <img src="${mainImg}" class="card-img-top" alt="${p.title}" style="cursor:pointer; height: 150px; object-fit: cover;" onclick="openDetailModal(${p.id})" onerror="this.src='https://via.placeholder.com/300'">
+                            <div class="card-body p-2">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <span class="badge bg-primary" style="font-size: 0.6rem;">${p.category}</span>
+                                    <span class="badge bg-secondary" style="font-size: 0.6rem;"><i class="fa-solid fa-location-dot me-1"></i>${p.city}</span>
+                                </div>
+                                <h6 class="card-title fs-6 fw-bold text-truncate mb-1">${p.title}</h6>
+                                <p class="card-text text-danger fw-bold mb-1" style="font-size: 0.9rem;">${p.price.toLocaleString()} MAD</p>
+                                <div class="d-flex gap-1 mt-1">
+                                    <a href="https://wa.me/${cleanPhoneNum}?text=Bonjour,%20je%20suis%20intéressé%20par%20${encodeURIComponent(p.title)}" target="_blank" class="btn btn-success btn-sm flex-fill" style="font-size: 0.7rem;">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </a>
+                                    <a href="tel:${p.phone}" class="btn btn-outline-primary btn-sm flex-fill" style="font-size: 0.7rem;">
+                                        <i class="fa-solid fa-phone"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Page catégorie
+        function openCategoryPage(catName) {
+            if (!dataLoaded || products.length === 0) {
+                Swal.fire('Aucune donnée', 'Les annonces ne sont pas encore chargées.', 'info');
+                return;
+            }
+            
+            currentActiveCategory = catName;
+            document.getElementById('catPageTitle').innerText = catName;
+            document.getElementById('catPageCityFilter').value = "";
+            document.getElementById('catSearchInput').value = "";
+            switchView('category-page');
+            renderCategoryPageProducts();
+        }
+
+        function renderCategoryPageProducts() {
+            const grid = document.getElementById('categoryPageGrid');
+            if (!grid) return;
+            
+            if (!dataLoaded || products.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-12 text-center text-muted py-5">
+                        <i class="fa-solid fa-box-open fa-3x mb-2"></i>
+                        <p>Aucune annonce disponible.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const cityFilter = document.getElementById('catPageCityFilter').value;
+            const searchFilter = document.getElementById('catSearchInput').value.toLowerCase();
+            grid.innerHTML = '';
+
+            const filtered = products.filter(p => {
+                const matchCat = p.category === currentActiveCategory;
+                const matchCity = cityFilter === "" || p.city === cityFilter;
+                const matchSearch = p.title.toLowerCase().includes(searchFilter) || 
+                                   (p.desc && p.desc.toLowerCase().includes(searchFilter));
+                return matchCat && matchCity && matchSearch;
+            });
+
+            if(filtered.length === 0) {
+                grid.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="fa-solid fa-box-open fa-3x mb-2"></i><p>Aucune annonce dans cette catégorie.</p></div>';
+                return;
+            }
+
+            grid.innerHTML = '';
+            filtered.forEach(p => {
+                const mainImg = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/300';
+                const cleanPhoneNum = cleanPhone(p.phone);
+                grid.innerHTML += `
+                    <div class="col-12 col-sm-6 col-md-4">
+                        <div class="card h-100 product-card shadow-sm border-0">
+                            <img src="${mainImg}" class="card-img-top" alt="${p.title}" style="cursor:pointer; height: 180px; object-fit: cover;" onclick="openDetailModal(${p.id})" onerror="this.src='https://via.placeholder.com/300'">
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="badge bg-primary">${p.category}</span>
+                                    <span class="badge bg-secondary"><i class="fa-solid fa-location-dot me-1"></i>${p.city}</span>
+                                </div>
+                                <h5 class="card-title fs-6 fw-bold text-truncate">${p.title}</h5>
+                                <p class="card-text text-danger fw-bold mb-2">${p.price.toLocaleString()} MAD</p>
+                                <p class="card-text text-muted small flex-grow-1 text-truncate">${p.desc || ''}</p>
+                                <div class="d-flex gap-2 mt-2">
+                                    <a href="https://wa.me/${cleanPhoneNum}?text=Bonjour,%20je%20suis%20intéressé%20par%20${encodeURIComponent(p.title)}" target="_blank" class="btn btn-success btn-sm flex-fill">
+                                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                                    </a>
+                                    <a href="tel:${p.phone}" class="btn btn-outline-primary btn-sm flex-fill">
+                                        <i class="fa-solid fa-phone"></i> Appeler
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Navigation
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            const targetView = document.getElementById('view-' + viewName);
+            if (targetView) {
+                targetView.classList.add('active');
+            }
+            window.scrollTo(0,0);
+            if(viewName === 'admin') renderAdminTable();
+        }
+
+        // Contact
+        function openContactModal() {
+            document.getElementById('contactForm').reset();
+            new bootstrap.Modal(document.getElementById('contactModal')).show();
+        }
+
+        function submitContactForm() {
+            const name = document.getElementById('contactName').value.trim();
+            const phone = document.getElementById('contactPhone').value.trim();
+            const subject = document.getElementById('contactSubject').value;
+            const message = document.getElementById('contactMessage').value.trim();
+
+            if (!name || !phone || !subject || !message) {
+                Swal.fire('Champs obligatoires', 'Veuillez remplir tous les champs.', 'error');
+                return;
+            }
+
+            const adminPhone = "212608975435";
+            const whatsappText = `*--- NOUVEAU MESSAGE ---*%0A*Nom:* ${encodeURIComponent(name)}%0A*Téléphone:* ${encodeURIComponent(phone)}%0A*Objet:* ${encodeURIComponent(subject)}%0A*Message:* ${encodeURIComponent(message)}`;
+            
+            window.open(`https://wa.me/${adminPhone}?text=${whatsappText}`, '_blank');
+            
+            bootstrap.Modal.getInstance(document.getElementById('contactModal')).hide();
+            Swal.fire('Merci !', 'Message envoyé à l\'administrateur.', 'success');
+        }
+
+        // Ajout d'annonce
+        function openAddModal() {
+            if (!dataLoaded) {
+                Swal.fire('Chargement en cours', 'Veuillez attendre le chargement des annonces.', 'info');
+                return;
+            }
+            document.getElementById('addForm').reset();
+            new bootstrap.Modal(document.getElementById('addModal')).show();
+        }
+
+        async function submitAddForm() {
+            const title = document.getElementById('addTitle').value.trim();
+            const category = document.getElementById('addCategory').value;
+            const city = document.getElementById('addCity').value;
+            const price = document.getElementById('addPrice').value;
+            const phone = document.getElementById('addPhone').value.trim();
+            const desc = document.getElementById('addDesc').value.trim();
+
+            if (!title || !category || !city || !price || !phone) {
+                Swal.fire('Champs obligatoires', 'Veuillez remplir tous les champs obligatoires.', 'error');
+                return;
+            }
+
+            // Récupérer les images
+            const fileInputs = [
+                document.getElementById('addImage1'),
+                document.getElementById('addImage2'),
+                document.getElementById('addImage3'),
+                document.getElementById('addImage4')
+            ];
+
+            let images = [];
+            for (let input of fileInputs) {
+                if (input.files && input.files[0]) {
+                    try {
+                        const base64 = await toBase64(input.files[0]);
+                        images.push(base64);
+                    } catch(e) {
+                        console.error('Erreur conversion image:', e);
+                    }
+                }
+            }
+
+            if (images.length === 0) {
+                images = ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=500'];
+            }
+
+            const newProduct = {
+                title: title,
+                category: category,
+                city: city,
+                price: Number(price),
+                phone: phone,
+                desc: desc,
+                images: images
+            };
+
+            Swal.fire({
+                title: 'Publication en cours...',
+                html: `
+                    <div class="d-flex flex-column align-items-center">
+                        <div class="spinner-border text-primary mb-3" role="status" style="width: 2.5rem; height: 2.5rem;">
+                            <span class="visually-hidden">Envoi...</span>
+                        </div>
+                        <p class="text-muted">Enregistrement dans la base de données</p>
+                    </div>
+                `,
+                showConfirmButton: false,
+                allowOutsideClick: false
+            });
+
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(newProduct)
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    Swal.close();
+                    bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
+                    
+                    await loadProducts(); // Recharger toutes les annonces
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Annonce publiée !',
+                        text: 'Votre annonce a été ajoutée à la base de données.',
+                        confirmButtonColor: '#d35400'
+                    });
+                } else {
+                    throw new Error(result.message || 'Erreur lors de la publication');
+                }
+            } catch (error) {
+                Swal.close();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'Impossible de publier l\'annonce : ' + error.message,
+                    confirmButtonColor: '#d35400'
+                });
+            }
+        }
+
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+        });
+
+        // Détails
+        function openDetailModal(id) {
+            if (!dataLoaded || products.length === 0) {
+                Swal.fire('Aucune donnée', 'Les annonces ne sont pas disponibles.', 'info');
+                return;
+            }
+            
+            const p = products.find(item => item.id == id);
+            if(!p) {
+                Swal.fire('Erreur', 'Annonce introuvable', 'error');
+                return;
+            }
+
+            let carouselImgsHtml = '';
+            if(p.images && p.images.length > 0) {
+                p.images.forEach((img, idx) => {
+                    carouselImgsHtml += `<div class="carousel-item ${idx === 0 ? 'active' : ''}"><img src="${img}" class="d-block w-100 rounded" style="height:300px; object-fit:cover;" onerror="this.src='https://via.placeholder.com/500'"></div>`;
+                });
+            }
+
+            const cleanPhoneNum = cleanPhone(p.phone);
+
+            const modalContent = document.getElementById('detailModalContent');
+            modalContent.innerHTML = `
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">${p.title}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="productCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
+                        <div class="carousel-inner">${carouselImgsHtml}</div>
+                        ${p.images && p.images.length > 1 ? `
+                        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon bg-dark rounded-circle"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon bg-dark rounded-circle"></span>
+                        </button>` : ''}
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">${p.category}</span>
+                        <span class="badge bg-secondary">${p.city}</span>
+                    </div>
+                    <h4 class="text-danger fw-bold">${p.price.toLocaleString()} MAD</h4>
+                    <p class="text-muted">${p.desc || ''}</p>
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="https://wa.me/${cleanPhoneNum}?text=Bonjour,%20je%20suis%20intéressé" target="_blank" class="btn btn-success flex-fill"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                        <a href="tel:${p.phone}" class="btn btn-primary flex-fill"><i class="fa-solid fa-phone"></i> Appel</a>
+                    </div>
+                </div>
+            `;
+            new bootstrap.Modal(document.getElementById('detailModal')).show();
+        }
+
+        // Admin
+        async function openAdminLogin() {
+            const { value: password } = await Swal.fire({
+                title: 'Accès Administrateur',
+                input: 'password',
+                inputPlaceholder: 'Mot de passe',
+                showCancelButton: true,
+                confirmButtonText: 'Connexion',
+                cancelButtonText: 'Annuler'
+            });
+
+            if (password === 'Seddik') {
+                if (!dataLoaded) {
+                    await loadProducts();
+                }
+                Swal.fire('Bienvenue', 'Accès autorisé.', 'success');
+                switchView('admin');
+            } else if (password !== undefined) {
+                Swal.fire('Erreur', 'Mot de passe incorrect.', 'error');
+            }
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('adminTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            if (!dataLoaded || products.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">Aucune annonce dans la base de données</td></tr>';
+                return;
+            }
+            
+            products.forEach(p => {
+                const img = (p.images && p.images.length > 0) ? p.images[0] : '';
+                tbody.innerHTML += `
+                    <tr>
+                        <td><img src="${img}" class="rounded" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/50'"></td>
+                        <td class="fw-bold">${p.title}</td>
+                        <td><span class="badge bg-light text-dark">${p.category}</span></td>
+                        <td>${p.city}</td>
+                        <td>${p.price.toLocaleString()} MAD</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="deleteProduct(${p.id})" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function deleteProduct(id) {
+            const result = await Swal.fire({
+                title: 'Supprimer ?',
+                text: "Cette action est définitive.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Supprimer',
+                cancelButtonText: 'Annuler'
+            });
+
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Suppression en cours...',
+                    html: `
+                        <div class="d-flex flex-column align-items-center">
+                            <div class="spinner-border text-danger mb-3" role="status" style="width: 2rem; height: 2rem;">
+                                <span class="visually-hidden">Suppression...</span>
+                            </div>
+                            <p class="text-muted">Suppression dans la base de données</p>
+                        </div>
+                    `,
+                    showConfirmButton: false,
+                    allowOutsideClick: false
+                });
+
+                try {
+                    await fetch(WEB_APP_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: "delete", id: id })
+                    });
+                    
+                    Swal.close();
+                    await loadProducts(); // Recharger les données
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Supprimé !',
+                        text: 'Annonce retirée de la base de données.',
+                        confirmButtonColor: '#d35400'
+                    });
+                } catch (error) {
+                    Swal.close();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur',
+                        text: 'Impossible de supprimer l\'annonce.',
+                        confirmButtonColor: '#d35400'
+                    });
+                }
+            }
+        }
+
+        // Initialisation
+        window.onload = function() {
+            initSelectors();
+            loadProducts();
+        };
+    </script>
+</body>
+</html>
