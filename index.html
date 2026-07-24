@@ -34,8 +34,14 @@
             background: #ffffff;
             box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
         }
-        .product-card img {
-            height: 180px;
+        .product-card .card-img-top {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            background-color: #f0f0f0;
+        }
+        #categoryPageGrid .product-card .card-img-top {
+            aspect-ratio: 1 / 1;
             object-fit: cover;
         }
         .view-section {
@@ -117,6 +123,7 @@
             text-decoration: none;
             font-weight: 600;
             transition: color 0.3s;
+            font-size: 0.75rem; /* Taille réduite */
         }
         .footer-link:hover {
             color: #b94600;
@@ -131,6 +138,106 @@
         .header-brand:hover {
             color: #b94600;
         }
+        /* Bouton œil sur les cartes */
+        .card-img-overlay-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(2px);
+            z-index: 5;
+            cursor: pointer;
+            font-size: 1.3rem;
+        }
+        .product-card:hover .card-img-overlay-btn {
+            opacity: 1;
+        }
+        .card-img-overlay-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+        }
+        /* Modale détail en plein écran */
+        .modal-fullscreen .modal-content {
+            min-height: 100vh;
+            border-radius: 0;
+            background: #ffffff;
+        }
+        .modal-fullscreen .modal-body {
+            padding: 1rem 1.5rem 1rem 1.5rem;
+            overflow-y: auto;
+        }
+        /* Images du carousel - adaptation parfaite */
+        #detailModalContent .carousel-item img {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: contain;
+            background-color: #f0f0f0;
+        }
+        @media (max-width: 767px) {
+            #detailModalContent .carousel-item img {
+                aspect-ratio: 1 / 1;
+                object-fit: contain;
+            }
+        }
+        /* Texte justifié */
+        .text-justify {
+            text-align: justify;
+        }
+        #detailModal .modal-dialog {
+            margin: 0;
+            max-width: 100%;
+            width: 100%;
+            height: 100%;
+        }
+        #detailModal .modal-content {
+            border-radius: 0;
+            min-height: 100vh;
+        }
+        /* Footer fixe de la modale pour les boutons */
+        .modal-footer-fixed {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            border-top: 1px solid #dee2e6;
+            padding: 12px 20px;
+            z-index: 10;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        .modal-footer-fixed .btn {
+            border-radius: 50px;
+            padding: 10px 0;
+            font-weight: 600;
+        }
+        /* Suppression des boutons d'action dans les cartes */
+        .product-card .card-actions {
+            display: none;
+        }
+        .product-card .btn-detail-only {
+            display: block;
+        }
+        /* Style du bouton détail unique */
+        .btn-detail-only {
+            width: 100%;
+            border-radius: 50px;
+            padding: 6px 0;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        /* Ajustement des badges */
+        .product-card .badge {
+            font-size: 0.6rem;
+        }
     </style>
 </head>
 <body>
@@ -140,7 +247,6 @@
         <a href="#" class="header-brand" onclick="switchView('landing')">
             <i class="fa-solid fa-store me-1"></i> MarocMarket
         </a>
-        <!-- Bouton Admin dans le header -->
         <button class="admin-header-btn" onclick="openAdminLogin()">
             <i class="fa-solid fa-lock"></i> Admin
         </button>
@@ -352,10 +458,12 @@
         </div>
     </div>
 
-    <!-- Detail -->
+    <!-- Detail Modal en plein écran -->
     <div class="modal fade" id="detailModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content" id="detailModalContent"></div>
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content" id="detailModalContent">
+                <!-- Le contenu est injecté par JavaScript -->
+            </div>
         </div>
     </div>
 
@@ -405,16 +513,12 @@
         let currentActiveCategory = "";
         let dataLoaded = false;
 
-        // Fonction utilitaire pour nettoyer le numéro de téléphone
         function cleanPhone(phone) {
             if (!phone) return '0600000000';
-            // Convertir en string si ce n'est pas déjà une chaîne
             let phoneStr = String(phone);
-            // Supprimer tous les caractères non numériques
             return phoneStr.replace(/[^0-9]/g, '');
         }
 
-        // Fonction utilitaire pour s'assurer que les images sont un tableau
         function ensureImages(images) {
             if (!images) return ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=500'];
             if (Array.isArray(images)) return images;
@@ -429,9 +533,7 @@
             return ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=500'];
         }
 
-        // Initialisation
         function initSelectors() {
-            // Catégories
             const catSelect = document.getElementById('addCategory');
             if (catSelect) {
                 catSelect.innerHTML = '<option value="" selected disabled>-- Choisir une catégorie --</option>';
@@ -440,7 +542,6 @@
                 });
             }
 
-            // Villes
             const citySelects = [document.getElementById('addCity'), document.getElementById('catPageCityFilter')];
             citySelects.forEach((sel, index) => {
                 if (!sel) return;
@@ -453,10 +554,8 @@
             renderCategoryGrids();
         }
 
-        // Chargement des produits depuis le cloud
         async function loadProducts() {
             try {
-                // Afficher le chargement
                 Swal.fire({
                     title: 'Chargement du marché...',
                     html: `
@@ -476,7 +575,6 @@
                     customClass: { popup: 'rounded-4' }
                 });
 
-                // Tentative de connexion au cloud
                 const response = await fetch(WEB_APP_URL, {
                     method: 'GET',
                     headers: { 'Accept': 'application/json' },
@@ -490,7 +588,6 @@
                 const result = await response.json();
                 console.log('Données reçues:', result);
 
-                // Extraire les données
                 let data = [];
                 if (result && result.status === "success" && Array.isArray(result.data)) {
                     data = result.data;
@@ -502,14 +599,11 @@
                     throw new Error('Format de données invalide');
                 }
 
-                // Vérifier qu'il y a des données
                 if (!data || data.length === 0) {
                     throw new Error('Aucune annonce trouvée dans la base de données');
                 }
 
-                // Nettoyer et formater les données avec gestion des types
                 products = data.filter(p => p && typeof p === 'object').map(p => {
-                    // Nettoyer le téléphone
                     let phone = p.phone || p.Phone || p.Telephone || '0600000000';
                     phone = String(phone).replace(/[^0-9+]/g, '');
                     if (!phone.startsWith('+')) {
@@ -532,7 +626,6 @@
                 dataLoaded = true;
                 Swal.close();
                 
-                // Afficher les produits
                 renderAllProducts();
                 
                 Swal.fire({
@@ -547,7 +640,6 @@
                 console.error('Erreur de chargement:', error);
                 Swal.close();
                 
-                // Afficher l'erreur
                 dataLoaded = false;
                 products = [];
                 showErrorMessage(error.message);
@@ -559,12 +651,11 @@
                     confirmButtonColor: '#d35400',
                     confirmButtonText: 'Réessayer'
                 }).then(() => {
-                    loadProducts(); // Réessayer
+                    loadProducts();
                 });
             }
         }
 
-        // Afficher un message d'erreur dans l'interface
         function showErrorMessage(errorMessage) {
             const grid = document.getElementById('homeProductsGrid');
             if (grid) {
@@ -587,7 +678,6 @@
             document.getElementById('productCount').textContent = '0 annonces';
         }
 
-        // Rendre tous les produits
         function renderAllProducts() {
             if (!dataLoaded || products.length === 0) {
                 showErrorMessage('Aucune annonce disponible');
@@ -609,7 +699,6 @@
             }
         }
 
-        // Catégories
         function renderCategoryGrids() {
             const appGrid = document.getElementById('appCategoriesGrid');
             if (!appGrid) return;
@@ -628,7 +717,6 @@
             appGrid.innerHTML = htmlContent;
         }
 
-        // Page d'accueil
         function renderHomeProducts() {
             const grid = document.getElementById('homeProductsGrid');
             if (!grid) return;
@@ -643,26 +731,23 @@
             grid.innerHTML = '';
             recentProducts.forEach(p => {
                 const mainImg = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/300';
-                const cleanPhoneNum = cleanPhone(p.phone);
                 grid.innerHTML += `
                     <div class="col-6 col-md-4 col-lg-3">
-                        <div class="card h-100 product-card shadow-sm border-0">
-                            <img src="${mainImg}" class="card-img-top" alt="${p.title}" style="cursor:pointer; height: 150px; object-fit: cover;" onclick="openDetailModal(${p.id})" onerror="this.src='https://via.placeholder.com/300'">
+                        <div class="card h-100 product-card shadow-sm border-0 position-relative">
+                            <button class="card-img-overlay-btn" onclick="event.stopPropagation(); openDetailModal(${p.id})" title="Voir les détails">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <img src="${mainImg}" class="card-img-top" alt="${p.title}" onclick="openDetailModal(${p.id})" onerror="this.src='https://via.placeholder.com/300'">
                             <div class="card-body p-2">
                                 <div class="d-flex justify-content-between align-items-start mb-1">
-                                    <span class="badge bg-primary" style="font-size: 0.6rem;">${p.category}</span>
-                                    <span class="badge bg-secondary" style="font-size: 0.6rem;"><i class="fa-solid fa-location-dot me-1"></i>${p.city}</span>
+                                    <span class="badge bg-primary">${p.category}</span>
+                                    <span class="badge bg-secondary"><i class="fa-solid fa-location-dot me-1"></i>${p.city}</span>
                                 </div>
                                 <h6 class="card-title fs-6 fw-bold text-truncate mb-1">${p.title}</h6>
-                                <p class="card-text text-danger fw-bold mb-1" style="font-size: 0.9rem;">${p.price.toLocaleString()} MAD</p>
-                                <div class="d-flex gap-1 mt-1">
-                                    <a href="https://wa.me/${cleanPhoneNum}?text=Bonjour,%20je%20suis%20intéressé%20par%20${encodeURIComponent(p.title)}" target="_blank" class="btn btn-success btn-sm flex-fill" style="font-size: 0.7rem;">
-                                        <i class="fa-brands fa-whatsapp"></i>
-                                    </a>
-                                    <a href="tel:${p.phone}" class="btn btn-outline-primary btn-sm flex-fill" style="font-size: 0.7rem;">
-                                        <i class="fa-solid fa-phone"></i>
-                                    </a>
-                                </div>
+                                <p class="card-text text-danger fw-bold mb-2" style="font-size: 0.9rem;">${p.price.toLocaleString()} MAD</p>
+                                <button class="btn btn-primary btn-detail-only" onclick="openDetailModal(${p.id})">
+                                    <i class="fa-solid fa-eye me-1"></i> Voir détails
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -670,7 +755,6 @@
             });
         }
 
-        // Page catégorie
         function openCategoryPage(catName) {
             if (!dataLoaded || products.length === 0) {
                 Swal.fire('Aucune donnée', 'Les annonces ne sont pas encore chargées.', 'info');
@@ -719,11 +803,13 @@
             grid.innerHTML = '';
             filtered.forEach(p => {
                 const mainImg = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/300';
-                const cleanPhoneNum = cleanPhone(p.phone);
                 grid.innerHTML += `
                     <div class="col-12 col-sm-6 col-md-4">
-                        <div class="card h-100 product-card shadow-sm border-0">
-                            <img src="${mainImg}" class="card-img-top" alt="${p.title}" style="cursor:pointer; height: 180px; object-fit: cover;" onclick="openDetailModal(${p.id})" onerror="this.src='https://via.placeholder.com/300'">
+                        <div class="card h-100 product-card shadow-sm border-0 position-relative">
+                            <button class="card-img-overlay-btn" onclick="event.stopPropagation(); openDetailModal(${p.id})" title="Voir les détails">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <img src="${mainImg}" class="card-img-top" alt="${p.title}" onclick="openDetailModal(${p.id})" onerror="this.src='https://via.placeholder.com/300'">
                             <div class="card-body d-flex flex-column">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <span class="badge bg-primary">${p.category}</span>
@@ -732,14 +818,9 @@
                                 <h5 class="card-title fs-6 fw-bold text-truncate">${p.title}</h5>
                                 <p class="card-text text-danger fw-bold mb-2">${p.price.toLocaleString()} MAD</p>
                                 <p class="card-text text-muted small flex-grow-1 text-truncate">${p.desc || ''}</p>
-                                <div class="d-flex gap-2 mt-2">
-                                    <a href="https://wa.me/${cleanPhoneNum}?text=Bonjour,%20je%20suis%20intéressé%20par%20${encodeURIComponent(p.title)}" target="_blank" class="btn btn-success btn-sm flex-fill">
-                                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                                    </a>
-                                    <a href="tel:${p.phone}" class="btn btn-outline-primary btn-sm flex-fill">
-                                        <i class="fa-solid fa-phone"></i> Appeler
-                                    </a>
-                                </div>
+                                <button class="btn btn-primary btn-detail-only mt-2" onclick="openDetailModal(${p.id})">
+                                    <i class="fa-solid fa-eye me-1"></i> Voir détails
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -747,7 +828,6 @@
             });
         }
 
-        // Navigation
         function switchView(viewName) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             const targetView = document.getElementById('view-' + viewName);
@@ -758,7 +838,6 @@
             if(viewName === 'admin') renderAdminTable();
         }
 
-        // Contact
         function openContactModal() {
             document.getElementById('contactForm').reset();
             new bootstrap.Modal(document.getElementById('contactModal')).show();
@@ -784,7 +863,6 @@
             Swal.fire('Merci !', 'Message envoyé à l\'administrateur.', 'success');
         }
 
-        // Ajout d'annonce
         function openAddModal() {
             if (!dataLoaded) {
                 Swal.fire('Chargement en cours', 'Veuillez attendre le chargement des annonces.', 'info');
@@ -807,7 +885,6 @@
                 return;
             }
 
-            // Récupérer les images
             const fileInputs = [
                 document.getElementById('addImage1'),
                 document.getElementById('addImage2'),
@@ -867,7 +944,7 @@
                     Swal.close();
                     bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
                     
-                    await loadProducts(); // Recharger toutes les annonces
+                    await loadProducts();
                     
                     Swal.fire({
                         icon: 'success',
@@ -896,7 +973,7 @@
             reader.onerror = reject;
         });
 
-        // Détails
+        // Détails en plein écran avec footer fixe pour les boutons
         function openDetailModal(id) {
             if (!dataLoaded || products.length === 0) {
                 Swal.fire('Aucune donnée', 'Les annonces ne sont pas disponibles.', 'info');
@@ -912,7 +989,7 @@
             let carouselImgsHtml = '';
             if(p.images && p.images.length > 0) {
                 p.images.forEach((img, idx) => {
-                    carouselImgsHtml += `<div class="carousel-item ${idx === 0 ? 'active' : ''}"><img src="${img}" class="d-block w-100 rounded" style="height:300px; object-fit:cover;" onerror="this.src='https://via.placeholder.com/500'"></div>`;
+                    carouselImgsHtml += `<div class="carousel-item ${idx === 0 ? 'active' : ''}"><img src="${img}" class="d-block w-100 rounded" onerror="this.src='https://via.placeholder.com/500'"></div>`;
                 });
             }
 
@@ -920,30 +997,55 @@
 
             const modalContent = document.getElementById('detailModalContent');
             modalContent.innerHTML = `
-                <div class="modal-header">
+                <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title fw-bold">${p.title}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <div id="productCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
-                        <div class="carousel-inner">${carouselImgsHtml}</div>
-                        ${p.images && p.images.length > 1 ? `
-                        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon bg-dark rounded-circle"></span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
-                            <span class="carousel-control-next-icon bg-dark rounded-circle"></span>
-                        </button>` : ''}
+                <div class="modal-body bg-light pb-0">
+                    <div class="container-fluid">
+                        <div id="productCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+                            <div class="carousel-inner rounded shadow">${carouselImgsHtml}</div>
+                            ${p.images && p.images.length > 1 ? `
+                            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon bg-dark rounded-circle p-3"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon bg-dark rounded-circle p-3"></span>
+                            </button>` : ''}
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <span class="badge bg-primary fs-6 px-3 py-2">${p.category}</span>
+                                    <span class="badge bg-secondary fs-6 px-3 py-2"><i class="fa-solid fa-location-dot me-1"></i>${p.city}</span>
+                                </div>
+                                <h3 class="text-danger fw-bold mb-3">${p.price.toLocaleString()} MAD</h3>
+                                <p class="text-muted fs-5 text-justify">${p.desc || 'Aucune description disponible.'}</p>
+                            </div>
+                            <div class="col-md-4">
+                                <!-- Espace réservé pour le contenu supplémentaire si nécessaire -->
+                            </div>
+                        </div>
                     </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="badge bg-primary">${p.category}</span>
-                        <span class="badge bg-secondary">${p.city}</span>
-                    </div>
-                    <h4 class="text-danger fw-bold">${p.price.toLocaleString()} MAD</h4>
-                    <p class="text-muted">${p.desc || ''}</p>
-                    <div class="d-flex gap-2 mt-3">
-                        <a href="https://wa.me/${cleanPhoneNum}?text=Bonjour,%20je%20suis%20intéressé" target="_blank" class="btn btn-success flex-fill"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
-                        <a href="tel:${p.phone}" class="btn btn-primary flex-fill"><i class="fa-solid fa-phone"></i> Appel</a>
+                </div>
+                <!-- Footer fixe avec les boutons en une seule ligne -->
+                <div class="modal-footer-fixed">
+                    <div class="row g-2">
+                        <div class="col-4">
+                            <a href="https://wa.me/${cleanPhoneNum}?text=Bonjour,%20je%20suis%20intéressé%20par%20${encodeURIComponent(p.title)}" target="_blank" class="btn btn-success w-100">
+                                <i class="fa-brands fa-whatsapp me-1"></i> WhatsApp
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <a href="tel:${p.phone}" class="btn btn-primary w-100">
+                                <i class="fa-solid fa-phone me-1"></i> Appel
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <button class="btn btn-outline-secondary w-100" onclick="bootstrap.Modal.getInstance(document.getElementById('detailModal')).hide()">
+                                <i class="fa-solid fa-xmark me-1"></i> Fermer
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1031,7 +1133,7 @@
                     });
                     
                     Swal.close();
-                    await loadProducts(); // Recharger les données
+                    await loadProducts();
                     
                     Swal.fire({
                         icon: 'success',
@@ -1051,7 +1153,6 @@
             }
         }
 
-        // Initialisation
         window.onload = function() {
             initSelectors();
             loadProducts();
