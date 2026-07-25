@@ -16,7 +16,7 @@
         }
         body {
             background-color: #f8f9fa;
-            padding-top: 70px;
+            padding-top: 95px;
             padding-bottom: 90px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
@@ -26,6 +26,7 @@
             z-index: 1030;
             background: #ffffff;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 10px 16px;
         }
         .fixed-footer {
             position: fixed;
@@ -130,13 +131,29 @@
             text-decoration: underline;
         }
         .header-brand {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: #d35400;
             text-decoration: none;
         }
         .header-brand:hover {
             color: #b94600;
+        }
+        .header-subtitle {
+            font-size: 0.8rem;
+            color: #6c757d;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        @media (max-width: 480px) {
+            .header-subtitle {
+                font-size: 0.6rem;
+                letter-spacing: 0;
+            }
+            .header-brand {
+                font-size: 1.2rem;
+            }
         }
         .card-img-overlay-btn {
             position: absolute;
@@ -232,7 +249,6 @@
         .product-card .badge {
             font-size: 0.6rem;
         }
-        /* Styles pour les champs de formulaire avec validation */
         .form-control.is-invalid {
             border-color: #dc3545 !important;
             box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
@@ -281,7 +297,6 @@
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
-        /* Boutons fermer/annuler en rouge */
         .btn-close-red {
             background-color: #dc3545;
             border-color: #dc3545;
@@ -292,14 +307,13 @@
             border-color: #bb2d3b;
             color: #fff;
         }
-        /* Fullscreen image viewer */
         #imageViewer {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0, 0, 0, 0.95);
             z-index: 9999;
             display: none;
             justify-content: center;
@@ -310,81 +324,244 @@
         #imageViewer.active {
             display: flex;
         }
-        #imageViewer img {
-            max-width: 100%;
-            max-height: 85vh;
+        #imageViewer .viewer-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #imageViewer .viewer-scroll-wrapper {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            scroll-behavior: smooth;
+            padding: 20px 0;
+        }
+        #imageViewer .viewer-scroll-wrapper::-webkit-scrollbar {
+            width: 8px;
+        }
+        #imageViewer .viewer-scroll-wrapper::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+        #imageViewer .viewer-scroll-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+        #imageViewer .viewer-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+        #imageViewer .viewer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+        }
+        #imageViewer .viewer-grid img {
+            width: 100%;
+            height: 300px;
             object-fit: contain;
             border-radius: 8px;
-            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+            background: rgba(255,255,255,0.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+            cursor: default;
         }
-        #imageViewer .close-viewer {
-            position: absolute;
+        #imageViewer .viewer-grid img:hover {
+            transform: scale(1.02);
+        }
+        #imageViewer .viewer-grid .single-image {
+            height: auto;
+            max-height: 85vh;
+            width: auto;
+            max-width: 100%;
+            margin: 0 auto;
+            grid-column: 1 / -1;
+        }
+        #imageViewer .viewer-controls {
+            position: fixed;
             top: 20px;
             right: 20px;
-            background: rgba(255,255,255,0.2);
-            border: none;
+            z-index: 10;
+            display: flex;
+            gap: 10px;
+        }
+        #imageViewer .viewer-controls button {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
             color: white;
-            font-size: 2rem;
             padding: 10px 20px;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        #imageViewer .close-viewer:hover {
-            background: rgba(255,0,0,0.6);
-            transform: scale(1.1);
+        #imageViewer .viewer-controls button:hover {
+            background: rgba(255,255,255,0.25);
+            transform: scale(1.05);
+        }
+        #imageViewer .viewer-controls .btn-close-viewer {
+            background: rgba(220, 53, 69, 0.3);
+            border-color: rgba(220, 53, 69, 0.4);
+        }
+        #imageViewer .viewer-controls .btn-close-viewer:hover {
+            background: rgba(220, 53, 69, 0.5);
         }
         #imageViewer .viewer-counter {
-            color: rgba(255,255,255,0.7);
-            margin-top: 15px;
-            font-size: 1rem;
-        }
-        #imageViewer .viewer-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255,255,255,0.15);
-            border: none;
-            color: white;
-            font-size: 2.5rem;
-            padding: 15px 20px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s;
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+            background: rgba(0,0,0,0.5);
+            padding: 8px 20px;
+            border-radius: 20px;
             backdrop-filter: blur(5px);
+            z-index: 10;
         }
-        #imageViewer .viewer-nav:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        #imageViewer .viewer-nav.prev {
-            left: 20px;
-        }
-        #imageViewer .viewer-nav.next {
-            right: 20px;
-        }
-        @media (max-width: 576px) {
-            #imageViewer .viewer-nav {
-                font-size: 1.5rem;
-                padding: 10px 15px;
+        @media (max-width: 768px) {
+            #imageViewer .viewer-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 10px;
             }
-            #imageViewer .close-viewer {
-                font-size: 1.2rem;
-                padding: 8px 16px;
+            #imageViewer .viewer-grid img {
+                height: 250px;
+            }
+            #imageViewer .viewer-controls {
                 top: 10px;
                 right: 10px;
+                flex-direction: column;
+                gap: 5px;
+            }
+            #imageViewer .viewer-controls button {
+                padding: 8px 14px;
+                font-size: 0.75rem;
+            }
+            #imageViewer .viewer-counter {
+                bottom: 15px;
+                font-size: 0.75rem;
+                padding: 5px 15px;
             }
         }
-        /* Validation pour les select */
-        select.form-control.is-invalid,
-        select.form-control.is-valid {
-            border-color: #dc3545 !important;
+        .header-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
         }
-        select.form-control.is-valid {
-            border-color: #198754 !important;
+        .header-center .header-brand {
+            font-size: 1.5rem;
+            line-height: 1.3;
         }
-        select.form-control.is-invalid {
-            border-color: #dc3545 !important;
+        .header-center .header-subtitle {
+            font-size: 0.8rem;
+            color: #6c757d;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        @media (max-width: 480px) {
+            .header-center .header-subtitle {
+                font-size: 0.6rem;
+                letter-spacing: 0;
+            }
+            .header-center .header-brand {
+                font-size: 1.2rem;
+            }
+        }
+        .btn-back-orange {
+            color: #d35400 !important;
+            border-color: #d35400 !important;
+        }
+        .btn-back-orange:hover {
+            background-color: #d35400 !important;
+            color: #fff !important;
+        }
+        .section-toggle {
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.3s;
+        }
+        .section-toggle:hover {
+            color: #b94600;
+        }
+        .section-toggle .toggle-icon {
+            transition: transform 0.3s;
+            display: inline-block;
+        }
+        .section-toggle .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+        #productsContainer.collapsed {
+            display: none;
+        }
+        .clickable-image {
+            cursor: pointer;
+            position: relative;
+        }
+        .clickable-image:hover::after {
+            content: '\f065';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            opacity: 1;
+        }
+        .clickable-image::after {
+            content: '\f065';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .admin-actions .btn {
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            margin: 0 2px;
+        }
+        .admin-actions .btn-edit {
+            color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        .admin-actions .btn-edit:hover {
+            background-color: #0d6efd;
+            color: #fff;
+        }
+        .admin-actions .btn-delete {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+        .admin-actions .btn-delete:hover {
+            background-color: #dc3545;
+            color: #fff;
         }
     </style>
 </head>
@@ -392,9 +569,13 @@
 
     <!-- HEADER FIXE -->
     <header class="fixed-header px-3 py-2 d-flex justify-content-between align-items-center">
-        <a href="#" class="header-brand" onclick="switchView('landing')">
-            <i class="fa-solid fa-store me-1"></i> MarocMarket
-        </a>
+        <div style="width: 70px;"></div>
+        <div class="header-center">
+            <a href="#" class="header-brand" onclick="switchView('landing')">
+                <i class="fa-solid fa-store me-1"></i> MarocMarket
+            </a>
+            <span class="header-subtitle">Un clic pour vendre.. Un clic pour acheter..!</span>
+        </div>
         <button class="admin-header-btn" onclick="openAdminLogin()">
             <i class="fa-solid fa-lock"></i> Admin
         </button>
@@ -430,7 +611,10 @@
             <!-- Affichage des annonces -->
             <div class="mt-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold text-primary"><i class="fa-solid fa-clock-rotate-left me-2"></i>Dernières annonces</h5>
+                    <h5 class="fw-bold text-primary section-toggle" onclick="toggleProductsSection()">
+                        <i class="fa-solid fa-clock-rotate-left me-2"></i>Dernières annonces
+                        <span class="toggle-icon" id="toggleIcon"><i class="fa-solid fa-chevron-down"></i></span>
+                    </h5>
                     <span class="badge bg-secondary" id="productCount">0 annonces</span>
                 </div>
                 <div id="productsContainer">
@@ -442,7 +626,7 @@
         <!-- 3. PAGE DÉDIÉE PAR CATÉGORIE -->
         <section id="view-category-page" class="view-section">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <button class="btn btn-sm btn-outline-secondary" onclick="switchView('app')">
+                <button class="btn btn-sm btn-outline-primary btn-back-orange" onclick="switchView('app')">
                     <i class="fa-solid fa-arrow-left me-1"></i> Retour
                 </button>
                 <h4 class="fw-bold m-0 text-primary" id="catPageTitle">Catégorie</h4>
@@ -562,17 +746,18 @@
         </div>
     </div>
 
-    <!-- Add -->
+    <!-- Add Modal -->
     <div class="modal fade" id="addModal" tabindex="-1">
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title"><i class="fa-solid fa-plus-circle me-1"></i> Publier une annonce</h5>
+                    <h5 class="modal-title"><i class="fa-solid fa-plus-circle me-1"></i> <span id="addModalTitle">Publier une annonce</span></h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body bg-light d-flex align-items-start justify-content-center">
                     <div class="form-container">
                         <form id="addForm">
+                            <input type="hidden" id="editProductId" value="">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Titre <span class="text-danger">*</span></label>
                                 <div class="input-group">
@@ -623,7 +808,7 @@
                         <i class="fa-solid fa-xmark me-1"></i> Annuler
                     </button>
                     <button type="button" class="btn btn-primary px-4" onclick="submitAddForm()">
-                        <i class="fa-solid fa-check me-1"></i> Publier
+                        <i class="fa-solid fa-check me-1"></i> <span id="addSubmitBtn">Publier</span>
                     </button>
                 </div>
             </div>
@@ -639,19 +824,21 @@
         </div>
     </div>
 
-    <!-- Image Viewer Fullscreen -->
+    <!-- Image Viewer Fullscreen amélioré -->
     <div id="imageViewer">
-        <button class="close-viewer" onclick="closeImageViewer()">
-            <i class="fa-solid fa-xmark"></i> Fermer
-        </button>
-        <button class="viewer-nav prev" onclick="navigateViewer(-1)">
-            <i class="fa-solid fa-chevron-left"></i>
-        </button>
-        <img id="viewerImage" src="" alt="Image">
-        <button class="viewer-nav next" onclick="navigateViewer(1)">
-            <i class="fa-solid fa-chevron-right"></i>
-        </button>
-        <div class="viewer-counter" id="viewerCounter">1 / 1</div>
+        <div class="viewer-controls">
+            <button class="btn-close-viewer" onclick="closeImageViewer()">
+                <i class="fa-solid fa-xmark"></i> Fermer
+            </button>
+        </div>
+        <div class="viewer-container">
+            <div class="viewer-scroll-wrapper" id="viewerScrollWrapper">
+                <div class="viewer-grid" id="viewerGrid">
+                    <!-- Les images sont injectées par JavaScript -->
+                </div>
+            </div>
+        </div>
+        <div class="viewer-counter" id="viewerCounter">0 images</div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -699,12 +886,10 @@
         let products = [];
         let currentActiveCategory = "";
         let dataLoaded = false;
+        let productsVisible = true;
 
-        // Variables pour l'image viewer
         let viewerImages = [];
-        let viewerCurrentIndex = 0;
 
-        // Fonctions de validation
         function validateField(input, condition) {
             const group = input.closest('.input-group');
             if (!group) {
@@ -726,15 +911,12 @@
             }
         }
 
-        // Nettoyage téléphone (uniquement chiffres)
         function cleanPhoneInput(input) {
             let val = input.value.replace(/[^0-9+]/g, '');
             input.value = val;
         }
 
-        // Attacher les événements de validation en temps réel
         function setupFormValidation() {
-            // Contact form
             const contactName = document.getElementById('contactName');
             const contactPhone = document.getElementById('contactPhone');
             const contactSubject = document.getElementById('contactSubject');
@@ -779,7 +961,6 @@
                 });
             }
 
-            // Add form
             const addTitle = document.getElementById('addTitle');
             const addCategory = document.getElementById('addCategory');
             const addCity = document.getElementById('addCity');
@@ -875,25 +1056,6 @@
 
         async function loadProducts() {
             try {
-                // Message de bienvenue dans l'alerte de chargement
-                Swal.fire({
-                    title: '🌍 Bienvenue sur MarocMarket',
-                    html: `
-                        <div class="d-flex flex-column align-items-center">
-                            <i class="fa-solid fa-store fa-3x text-primary mb-3"></i>
-                            <p class="text-muted mb-2">Votre marketplace pour acheter et vendre au Maroc</p>
-                            <div class="spinner-border text-primary mb-3" role="status" style="width: 2.5rem; height: 2.5rem;">
-                                <span class="visually-hidden">Chargement...</span>
-                            </div>
-                            <p class="text-muted">Chargement des annonces en cours...</p>
-                        </div>
-                    `,
-                    showConfirmButton: false,
-                    allowOutsideClick: false,
-                    background: '#ffffff',
-                    customClass: { popup: 'rounded-4' }
-                });
-
                 const response = await fetch(WEB_APP_URL, {
                     method: 'GET',
                     headers: { 'Accept': 'application/json' },
@@ -943,35 +1105,13 @@
                 });
 
                 dataLoaded = true;
-                Swal.close();
-                
                 renderAllProducts();
-                
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Chargement terminé !',
-                    text: `${products.length} annonces disponibles`,
-                    timer: 2000,
-                    showConfirmButton: false
-                });
 
             } catch (error) {
                 console.error('Erreur de chargement:', error);
-                Swal.close();
-                
                 dataLoaded = false;
                 products = [];
                 showErrorMessage(error.message);
-                
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erreur de chargement',
-                    text: 'Impossible de charger les annonces depuis la base de données.\n' + error.message,
-                    confirmButtonColor: '#d35400',
-                    confirmButtonText: 'Réessayer'
-                }).then(() => {
-                    loadProducts();
-                });
             }
         }
 
@@ -1157,9 +1297,23 @@
             if(viewName === 'admin') renderAdminTable();
         }
 
+        function toggleProductsSection() {
+            const container = document.getElementById('productsContainer');
+            const icon = document.getElementById('toggleIcon');
+            
+            productsVisible = !productsVisible;
+            
+            if (productsVisible) {
+                container.classList.remove('collapsed');
+                icon.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+            } else {
+                container.classList.add('collapsed');
+                icon.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+            }
+        }
+
         function openContactModal() {
             document.getElementById('contactForm').reset();
-            // Réinitialiser les styles de validation
             document.querySelectorAll('#contactForm .form-control, #contactForm .form-select').forEach(el => {
                 el.classList.remove('is-valid', 'is-invalid');
             });
@@ -1174,7 +1328,6 @@
 
             let isValid = true;
 
-            // Validation avec indicateurs visuels
             if (name.length < 2) {
                 validateField(document.getElementById('contactName'), false);
                 isValid = false;
@@ -1222,20 +1375,54 @@
             Swal.fire('Merci !', 'Message envoyé à l\'administrateur.', 'success');
         }
 
-        function openAddModal() {
+        function openAddModal(productId) {
             if (!dataLoaded) {
                 Swal.fire('Chargement en cours', 'Veuillez attendre le chargement des annonces.', 'info');
                 return;
             }
+            
+            // Réinitialiser le formulaire
             document.getElementById('addForm').reset();
+            document.getElementById('editProductId').value = '';
+            document.getElementById('addModalTitle').textContent = 'Publier une annonce';
+            document.getElementById('addSubmitBtn').textContent = 'Publier';
+            
             // Réinitialiser les styles de validation
             document.querySelectorAll('#addForm .form-control, #addForm .form-select').forEach(el => {
                 el.classList.remove('is-valid', 'is-invalid');
             });
+            
+            // Si on est en mode édition
+            if (productId) {
+                const product = products.find(p => p.id == productId);
+                if (product) {
+                    document.getElementById('editProductId').value = productId;
+                    document.getElementById('addModalTitle').textContent = 'Modifier l\'annonce';
+                    document.getElementById('addSubmitBtn').textContent = 'Modifier';
+                    document.getElementById('addTitle').value = product.title;
+                    document.getElementById('addCategory').value = product.category;
+                    document.getElementById('addCity').value = product.city;
+                    document.getElementById('addPrice').value = product.price;
+                    document.getElementById('addPhone').value = product.phone;
+                    document.getElementById('addDesc').value = product.desc || '';
+                    
+                    // Marquer les champs comme valides
+                    ['addTitle', 'addCategory', 'addCity', 'addPrice', 'addPhone'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el.value) {
+                            el.classList.remove('is-invalid');
+                            el.classList.add('is-valid');
+                        }
+                    });
+                }
+            }
+            
             new bootstrap.Modal(document.getElementById('addModal')).show();
         }
 
+        // FONCTION CORRIGEE - submitAddForm
         async function submitAddForm() {
+            const editId = document.getElementById('editProductId').value;
             const title = document.getElementById('addTitle').value.trim();
             const category = document.getElementById('addCategory').value;
             const city = document.getElementById('addCity').value;
@@ -1298,14 +1485,25 @@
             ];
 
             let images = [];
+            let hasNewImages = false;
+            
             for (let input of fileInputs) {
                 if (input.files && input.files[0]) {
                     try {
                         const base64 = await toBase64(input.files[0]);
                         images.push(base64);
+                        hasNewImages = true;
                     } catch(e) {
                         console.error('Erreur conversion image:', e);
                     }
+                }
+            }
+
+            // Si c'est une modification et qu'aucune nouvelle image n'est ajoutée, garder les anciennes
+            if (editId && !hasNewImages) {
+                const oldProduct = products.find(p => p.id == editId);
+                if (oldProduct && oldProduct.images) {
+                    images = oldProduct.images;
                 }
             }
 
@@ -1313,7 +1511,7 @@
                 images = ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=500'];
             }
 
-            const newProduct = {
+            const productData = {
                 title: title,
                 category: category,
                 city: city,
@@ -1323,14 +1521,20 @@
                 images: images
             };
 
+            // IMPORTANT: Si c'est une modification, on envoie l'ID et l'action "update"
+            if (editId) {
+                productData.id = editId;
+                productData.action = "update";
+            }
+
             Swal.fire({
-                title: 'Publication en cours...',
+                title: editId ? 'Modification en cours...' : 'Publication en cours...',
                 html: `
                     <div class="d-flex flex-column align-items-center">
                         <div class="spinner-border text-primary mb-3" role="status" style="width: 2.5rem; height: 2.5rem;">
                             <span class="visually-hidden">Envoi...</span>
                         </div>
-                        <p class="text-muted">Enregistrement dans la base de données</p>
+                        <p class="text-muted">${editId ? 'Mise à jour dans la base de données' : 'Enregistrement dans la base de données'}</p>
                     </div>
                 `,
                 showConfirmButton: false,
@@ -1340,7 +1544,7 @@
             try {
                 const response = await fetch(WEB_APP_URL, {
                     method: 'POST',
-                    body: JSON.stringify(newProduct)
+                    body: JSON.stringify(productData)
                 });
                 
                 const result = await response.json();
@@ -1349,23 +1553,24 @@
                     Swal.close();
                     bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
                     
+                    // Recharger les produits pour avoir les données à jour
                     await loadProducts();
                     
                     Swal.fire({
                         icon: 'success',
-                        title: 'Annonce publiée !',
-                        text: 'Votre annonce a été ajoutée à la base de données.',
+                        title: editId ? 'Annonce modifiée !' : 'Annonce publiée !',
+                        text: editId ? 'Votre annonce a été mise à jour avec succès.' : 'Votre annonce a été ajoutée à la base de données.',
                         confirmButtonColor: '#d35400'
                     });
                 } else {
-                    throw new Error(result.message || 'Erreur lors de la publication');
+                    throw new Error(result.message || 'Erreur lors de l\'opération');
                 }
             } catch (error) {
                 Swal.close();
                 Swal.fire({
                     icon: 'error',
                     title: 'Erreur',
-                    text: 'Impossible de publier l\'annonce : ' + error.message,
+                    text: 'Impossible de ' + (editId ? 'modifier' : 'publier') + ' l\'annonce : ' + error.message,
                     confirmButtonColor: '#d35400'
                 });
             }
@@ -1378,38 +1583,42 @@
             reader.onerror = reject;
         });
 
-        // Image Viewer Functions
-        function openImageViewer(images, index) {
-            viewerImages = images;
-            viewerCurrentIndex = index;
+        function openImageViewer(images) {
+            viewerImages = images || [];
+            const grid = document.getElementById('viewerGrid');
+            const counter = document.getElementById('viewerCounter');
+            
+            if (viewerImages.length === 0) {
+                return;
+            }
+
+            let html = '';
+            const isSingle = viewerImages.length === 1;
+            
+            viewerImages.forEach((img, index) => {
+                const imgClass = isSingle ? 'single-image' : '';
+                html += `
+                    <img src="${img}" 
+                         alt="Image ${index + 1}" 
+                         class="${imgClass}"
+                         loading="lazy"
+                         onerror="this.src='https://via.placeholder.com/500?text=Image+${index+1}'">
+                `;
+            });
+            
+            grid.innerHTML = html;
+            counter.textContent = `${viewerImages.length} image${viewerImages.length > 1 ? 's' : ''}`;
+            
             document.getElementById('imageViewer').classList.add('active');
             document.body.style.overflow = 'hidden';
-            updateViewerImage();
         }
 
         function closeImageViewer() {
             document.getElementById('imageViewer').classList.remove('active');
             document.body.style.overflow = '';
+            document.getElementById('viewerGrid').innerHTML = '';
         }
 
-        function navigateViewer(direction) {
-            if (viewerImages.length <= 1) return;
-            viewerCurrentIndex = (viewerCurrentIndex + direction + viewerImages.length) % viewerImages.length;
-            updateViewerImage();
-        }
-
-        function updateViewerImage() {
-            const img = document.getElementById('viewerImage');
-            img.src = viewerImages[viewerCurrentIndex] || 'https://via.placeholder.com/500';
-            document.getElementById('viewerCounter').textContent = `${viewerCurrentIndex + 1} / ${viewerImages.length}`;
-            
-            // Gestion des flèches de navigation
-            document.querySelector('.viewer-nav.prev').style.display = viewerImages.length > 1 ? 'block' : 'none';
-            document.querySelector('.viewer-nav.next').style.display = viewerImages.length > 1 ? 'block' : 'none';
-            document.getElementById('viewerCounter').style.display = viewerImages.length > 1 ? 'block' : 'none';
-        }
-
-        // Détails en plein écran avec footer fixe pour les boutons
         function openDetailModal(id) {
             if (!dataLoaded || products.length === 0) {
                 Swal.fire('Aucune donnée', 'Les annonces ne sont pas disponibles.', 'info');
@@ -1426,7 +1635,10 @@
             if(p.images && p.images.length > 0) {
                 p.images.forEach((img, idx) => {
                     carouselImgsHtml += `<div class="carousel-item ${idx === 0 ? 'active' : ''}">
-                        <img src="${img}" class="d-block w-100 rounded" onclick="openImageViewer(${JSON.stringify(p.images)}, ${idx})" onerror="this.src='https://via.placeholder.com/500'">
+                        <img src="${img}" class="d-block w-100 rounded clickable-image" 
+                             onclick="openImageViewer(${JSON.stringify(p.images)})" 
+                             onerror="this.src='https://via.placeholder.com/500'"
+                             title="Cliquez pour voir en plein écran">
                     </div>`;
                 });
             }
@@ -1449,7 +1661,15 @@
                             </button>
                             <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
                                 <span class="carousel-control-next-icon bg-dark rounded-circle p-3"></span>
-                            </button>` : ''}
+                            </button>
+                            <div class="carousel-indicators">
+                                ${p.images.map((_, idx) => `
+                                    <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="${idx}" 
+                                            class="${idx === 0 ? 'active' : ''}" 
+                                            aria-current="${idx === 0 ? 'true' : 'false'}" 
+                                            aria-label="Slide ${idx + 1}"></button>
+                                `).join('')}
+                            </div>` : ''}
                         </div>
                         <div class="row">
                             <div class="col-md-8">
@@ -1461,12 +1681,10 @@
                                 <p class="text-muted fs-5 text-justify">${p.desc || 'Aucune description disponible.'}</p>
                             </div>
                             <div class="col-md-4">
-                                <!-- Espace réservé -->
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- Footer fixe avec les boutons -->
                 <div class="modal-footer-fixed">
                     <div class="row g-2">
                         <div class="col-4">
@@ -1490,7 +1708,6 @@
             new bootstrap.Modal(document.getElementById('detailModal')).show();
         }
 
-        // Admin
         async function openAdminLogin() {
             const { value: password } = await Swal.fire({
                 title: 'Accès Administrateur',
@@ -1532,7 +1749,14 @@
                         <td>${p.city}</td>
                         <td>${p.price.toLocaleString()} MAD</td>
                         <td>
-                            <button class="btn btn-sm btn-danger" onclick="deleteProduct(${p.id})" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+                            <div class="admin-actions d-flex gap-1">
+                                <button class="btn btn-sm btn-outline-primary btn-edit" onclick="openAddModal(${p.id})" title="Modifier">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteProduct(${p.id})" title="Supprimer">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -1591,15 +1815,10 @@
             }
         }
 
-        // Gestion du clavier pour l'image viewer
         document.addEventListener('keydown', function(e) {
             if (document.getElementById('imageViewer').classList.contains('active')) {
                 if (e.key === 'Escape') {
                     closeImageViewer();
-                } else if (e.key === 'ArrowLeft') {
-                    navigateViewer(-1);
-                } else if (e.key === 'ArrowRight') {
-                    navigateViewer(1);
                 }
             }
         });
