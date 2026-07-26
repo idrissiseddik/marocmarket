@@ -1737,6 +1737,17 @@
             document.getElementById('viewerGrid').innerHTML = '';
         }
 
+        // Fonction pour générer le message WhatsApp personnalisé
+        function getWhatsAppMessage(product) {
+            const title = product.title || 'annonce';
+            const price = product.price ? `${product.price.toLocaleString()} MAD` : 'prix non spécifié';
+            
+            return `Bonjour, j'ai vu votre annonce "${title}" sur MarocMarket au prix de ${price}. 
+Je suis très intéressé(e) par cet article.
+Pourriez-vous me confirmer s'il est toujours disponible et si vous êtes ouvert(e) à une négociation ?
+Dans l'attente de votre retour, je vous remercie.`;
+        }
+
         function openDetailModal(id) {
             if (!dataLoaded || products.length === 0) {
                 Swal.fire('Aucune donnée', 'Les annonces ne sont pas disponibles.', 'info');
@@ -1762,6 +1773,8 @@
             }
 
             const cleanPhoneNum = cleanPhone(p.phone);
+            const whatsappMessage = getWhatsAppMessage(p);
+            const encodedMessage = encodeURIComponent(whatsappMessage);
 
             const modalContent = document.getElementById('detailModalContent');
             modalContent.innerHTML = `
@@ -1806,7 +1819,7 @@
                 <div class="modal-footer-fixed">
                     <div class="row g-2">
                         <div class="col-4">
-                            <a href="https://wa.me/${cleanPhoneNum}?text=Bonjour,%20je%20suis%20intéressé%20par%20${encodeURIComponent(p.title)}" target="_blank" class="btn btn-success w-100">
+                            <a href="https://wa.me/${cleanPhoneNum}?text=${encodedMessage}" target="_blank" class="btn btn-success w-100">
                                 <i class="fa-brands fa-whatsapp me-1"></i> WhatsApp
                             </a>
                         </div>
