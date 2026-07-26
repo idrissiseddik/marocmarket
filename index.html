@@ -146,13 +146,40 @@
             letter-spacing: 0.5px;
             white-space: nowrap;
         }
+        /* Header pleine largeur */
+        .header-full {
+            width: 100%;
+            text-align: center;
+            padding: 0 10px;
+        }
+        .header-full .header-brand {
+            font-size: 1.5rem;
+            line-height: 1.2;
+            display: block;
+        }
+        .header-full .header-subtitle {
+            font-size: 0.8rem;
+            color: #6c757d;
+            letter-spacing: 0.3px;
+            font-weight: 700;
+            white-space: nowrap;
+            display: block;
+            width: 100%;
+        }
         @media (max-width: 480px) {
-            .header-subtitle {
-                font-size: 0.6rem;
+            .header-full .header-subtitle {
+                font-size: 0.65rem;
                 letter-spacing: 0;
             }
-            .header-brand {
+            .header-full .header-brand {
                 font-size: 1.2rem;
+            }
+            .fixed-header {
+                padding: 8px 8px;
+            }
+            .admin-header-btn {
+                font-size: 0.7rem;
+                padding: 4px 10px;
             }
         }
         .card-img-overlay-btn {
@@ -456,33 +483,6 @@
                 padding: 5px 15px;
             }
         }
-        .header-center {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex: 1;
-        }
-        .header-center .header-brand {
-            font-size: 1.5rem;
-            line-height: 1.3;
-        }
-        .header-center .header-subtitle {
-            font-size: 0.8rem;
-            color: #6c757d;
-            letter-spacing: 0.5px;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-        @media (max-width: 480px) {
-            .header-center .header-subtitle {
-                font-size: 0.6rem;
-                letter-spacing: 0;
-            }
-            .header-center .header-brand {
-                font-size: 1.2rem;
-            }
-        }
         .btn-back-orange {
             color: #d35400 !important;
             border-color: #d35400 !important;
@@ -563,14 +563,65 @@
             background-color: #dc3545;
             color: #fff;
         }
+        /* Style pour la catégorie "Toutes" et "Autre" */
+        .category-icon-box.all-categories {
+            background: linear-gradient(135deg, #d35400, #e67e22) !important;
+            color: white !important;
+        }
+        .category-icon-box.all-categories span {
+            color: white !important;
+        }
+        .category-icon-box.all-categories i {
+            color: white !important;
+        }
+        .category-icon-box.all-categories:hover {
+            background: linear-gradient(135deg, #b94600, #d35400) !important;
+        }
+        .category-icon-box.other-category {
+            background: linear-gradient(135deg, #6c757d, #495057) !important;
+            color: white !important;
+        }
+        .category-icon-box.other-category span {
+            color: white !important;
+        }
+        .category-icon-box.other-category i {
+            color: white !important;
+        }
+        .category-icon-box.other-category:hover {
+            background: linear-gradient(135deg, #5a6268, #343a40) !important;
+        }
+        /* 2 articles par ligne sur mobile dans category page */
+        #categoryPageGrid .col-12.col-sm-6 {
+            flex: 0 0 auto;
+            width: 50%;
+        }
+        @media (max-width: 576px) {
+            #categoryPageGrid .col-12.col-sm-6 {
+                width: 50%;
+                padding-left: 6px;
+                padding-right: 6px;
+            }
+            #categoryPageGrid .row.g-3 {
+                --bs-gutter-x: 0.5rem;
+                --bs-gutter-y: 0.5rem;
+            }
+            /* Si un seul article, prendre toute la ligne */
+            #categoryPageGrid .col-12.col-sm-6:only-child {
+                width: 100%;
+            }
+            /* Si dernier article impair, prendre toute la ligne */
+            #categoryPageGrid .col-12.col-sm-6:last-child:nth-child(odd) {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- HEADER FIXE -->
+    <!-- HEADER FIXE PLEINE LARGEUR -->
     <header class="fixed-header px-3 py-2 d-flex justify-content-between align-items-center">
-        <div style="width: 70px;"></div>
-        <div class="header-center">
+        <div style="width: 40px;"></div>
+        <div class="header-full">
             <a href="#" class="header-brand" onclick="switchView('landing')">
                 <i class="fa-solid fa-store me-1"></i> MarocMarket
             </a>
@@ -591,7 +642,7 @@
                     <i class="fa-solid fa-store"></i>
                 </div>
                 <h1 class="display-4 fw-bold mb-3">Bienvenue sur MarocMarket</h1>
-                <p class="lead mb-4">Votre marketplace pour acheter et vendre au Maroc.</p>
+                <p class="lead mb-4">Votre marketplace pour acheter et vendre en ligne.</p>
                 <button class="btn btn-light text-primary fw-bold px-5 py-3 rounded-pill shadow" onclick="switchView('app')">
                     <i class="fa-solid fa-rocket me-2"></i> Accéder au marché
                 </button>
@@ -847,6 +898,7 @@
         // Configuration
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyqdvyO6YiOLfvo-aZimdOvLsoz23NtBmkC8YgF_grnJWNS8ewcuacbBa2PGmxD4eBV1Q/exec";
 
+        // Catégories (Autre en avant-dernier, Toutes en dernier)
         const categoriesList = [
             { name: "Véhicules", icon: "fa-car", color: "#dc3545" },
             { name: "Électronique", icon: "fa-bolt", color: "#6610f2" },
@@ -873,7 +925,8 @@
             { name: "Cours & Formations", icon: "fa-graduation-cap", color: "#3f51b5" },
             { name: "Événements", icon: "fa-calendar-days", color: "#ff5722" },
             { name: "Matériel Pro", icon: "fa-industry", color: "#607d8b" },
-            { name: "Autre", icon: "fa-asterisk", color: "#343a40" }
+            { name: "Autre", icon: "fa-asterisk", color: "#6c757d" },
+            { name: "Toutes", icon: "fa-th-large", color: "#d35400" }
         ];
 
         const citiesList = [
@@ -1032,11 +1085,21 @@
             return ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=500'];
         }
 
+        // Fonction pour mélanger un tableau (aléatoire)
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
         function initSelectors() {
             const catSelect = document.getElementById('addCategory');
             if (catSelect) {
                 catSelect.innerHTML = '<option value="" selected disabled>-- Choisir une catégorie --</option>';
-                categoriesList.forEach(c => {
+                categoriesList.filter(c => c.name !== "Toutes" && c.name !== "Autre").forEach(c => {
                     catSelect.innerHTML += `<option value="${c.name}">${c.name}</option>`;
                 });
             }
@@ -1162,13 +1225,32 @@
             const appGrid = document.getElementById('appCategoriesGrid');
             if (!appGrid) return;
             
+            // Séparer les catégories : normales, Autre, Toutes
+            const normalCategories = categoriesList.filter(c => c.name !== "Toutes" && c.name !== "Autre");
+            const otherCategory = categoriesList.find(c => c.name === "Autre");
+            const allCategory = categoriesList.find(c => c.name === "Toutes");
+            
+            // Mélanger les catégories normales
+            const shuffledNormal = shuffleArray(normalCategories);
+            
+            // Construire la liste finale : normales mélangées, puis Autre, puis Toutes
+            const finalCategories = [...shuffledNormal];
+            if (otherCategory) finalCategories.push(otherCategory);
+            if (allCategory) finalCategories.push(allCategory);
+            
             let htmlContent = "";
-            categoriesList.forEach(c => {
+            finalCategories.forEach(c => {
+                const isAll = c.name === "Toutes";
+                const isOther = c.name === "Autre";
+                let extraClass = '';
+                if (isAll) extraClass = 'all-categories';
+                if (isOther) extraClass = 'other-category';
+                
                 htmlContent += `
                     <div class="col-4 col-md-4 col-lg-3 p-1">
-                        <div class="p-2 py-3 bg-light rounded shadow-sm text-center category-icon-box d-flex flex-column justify-content-center align-items-center" onclick="openCategoryPage('${c.name}')">
-                            <i class="fa-solid ${c.icon} fa-xl mb-3" style="color: ${c.color};"></i>
-                            <span class="fw-bold text-dark" style="font-size: 0.75rem; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${c.name}</span>
+                        <div class="p-2 py-3 bg-light rounded shadow-sm text-center category-icon-box d-flex flex-column justify-content-center align-items-center ${extraClass}" onclick="openCategoryPage('${c.name}')">
+                            <i class="fa-solid ${c.icon} fa-xl mb-3" style="color: ${isAll || isOther ? 'white' : c.color};"></i>
+                            <span class="fw-bold" style="font-size: 0.75rem; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; ${isAll || isOther ? 'color: white;' : 'color: #212529;'}">${c.name}</span>
                         </div>
                     </div>
                 `;
@@ -1185,7 +1267,9 @@
                 return;
             }
             
-            const recentProducts = products.slice(0, 8);
+            // Mélanger les produits pour un affichage aléatoire
+            const shuffledProducts = shuffleArray(products);
+            const recentProducts = shuffledProducts.slice(0, 8);
             
             grid.innerHTML = '';
             recentProducts.forEach(p => {
@@ -1246,24 +1330,40 @@
             const searchFilter = document.getElementById('catSearchInput').value.toLowerCase();
             grid.innerHTML = '';
 
-            const filtered = products.filter(p => {
-                const matchCat = p.category === currentActiveCategory;
-                const matchCity = cityFilter === "" || p.city === cityFilter;
-                const matchSearch = p.title.toLowerCase().includes(searchFilter) || 
-                                   (p.desc && p.desc.toLowerCase().includes(searchFilter));
-                return matchCat && matchCity && matchSearch;
-            });
+            let filtered = [];
+            
+            if (currentActiveCategory === "Toutes") {
+                filtered = products.filter(p => {
+                    const matchCity = cityFilter === "" || p.city === cityFilter;
+                    const matchSearch = p.title.toLowerCase().includes(searchFilter) || 
+                                       (p.desc && p.desc.toLowerCase().includes(searchFilter));
+                    return matchCity && matchSearch;
+                });
+            } else {
+                filtered = products.filter(p => {
+                    const matchCat = p.category === currentActiveCategory;
+                    const matchCity = cityFilter === "" || p.city === cityFilter;
+                    const matchSearch = p.title.toLowerCase().includes(searchFilter) || 
+                                       (p.desc && p.desc.toLowerCase().includes(searchFilter));
+                    return matchCat && matchCity && matchSearch;
+                });
+            }
 
-            if(filtered.length === 0) {
+            // Mélanger les résultats pour un affichage aléatoire
+            const shuffledFiltered = shuffleArray(filtered);
+
+            if(shuffledFiltered.length === 0) {
                 grid.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="fa-solid fa-box-open fa-3x mb-2"></i><p>Aucune annonce dans cette catégorie.</p></div>';
                 return;
             }
 
             grid.innerHTML = '';
-            filtered.forEach(p => {
+            shuffledFiltered.forEach((p, index) => {
                 const mainImg = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/300';
+                // Ajouter une classe speciale pour le dernier élément impair sur mobile
+                const isLastOdd = (index === shuffledFiltered.length - 1 && shuffledFiltered.length % 2 === 1);
                 grid.innerHTML += `
-                    <div class="col-12 col-sm-6 col-md-4">
+                    <div class="col-12 col-sm-6 col-md-4 ${isLastOdd ? 'last-odd' : ''}">
                         <div class="card h-100 product-card shadow-sm border-0 position-relative">
                             <button class="card-img-overlay-btn" onclick="event.stopPropagation(); openDetailModal(${p.id})" title="Voir les détails">
                                 <i class="fa-solid fa-eye"></i>
@@ -1285,6 +1385,24 @@
                     </div>
                 `;
             });
+
+            // Ajouter du CSS pour que le dernier élément impair prenne toute la largeur
+            const styleTag = document.createElement('style');
+            styleTag.id = 'last-odd-style';
+            const existingStyle = document.getElementById('last-odd-style');
+            if (existingStyle) existingStyle.remove();
+            
+            // Appliquer le style uniquement si le nombre d'éléments est impair
+            if (shuffledFiltered.length % 2 === 1) {
+                styleTag.textContent = `
+                    @media (max-width: 576px) {
+                        #categoryPageGrid .col-12.col-sm-6:last-child {
+                            width: 100%;
+                        }
+                    }
+                `;
+                document.head.appendChild(styleTag);
+            }
         }
 
         function switchView(viewName) {
